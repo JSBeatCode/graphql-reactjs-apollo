@@ -1,16 +1,29 @@
 const express = require('express');
 const {graphqlHTTP} = require('express-graphql');
+const cors = require('cors');
 const schema = require('./schema');
+const path = require('path');
 
 const app = express();
 
-app.use('/graphql', graphqlHTTP({
+app.use(cors());
+
+app.use(
+    '/graphql', 
+    graphqlHTTP({
     schema,
     graphiql: true
 }));
 
-const PORT = process.env.PORT||5000;
+app.use(express.static('public'));
 
+//자동으로 index 페이지로 routing 하기
+app.get('*', (req, res)=>{
+    res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+});
+
+const PORT = process.env.PORT||5000;
+ 
 app.listen(PORT, () => { 
     console.log(`Server started on port ${PORT}`)
 });
